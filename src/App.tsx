@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import ButtonQuicks from "@/components/common/ButtonQuicks"
-import ButtonTaks from "@/components/common/ButtonTaks"
-import ButtonInbox from "@/components/common/ButtonInbox"
+import ButtonQuicks from "@/components/common/button/ButtonQuicks"
+import ButtonTaks from "@/components/common/button/ButtonTaks"
+import ButtonInbox from "@/components/common/button/ButtonInbox"
+import CardInbox from "./components/widgets/CardInbox"
 
 function App() {
   const [isOpen, setIsOpen] = useState(false)
@@ -10,7 +11,8 @@ function App() {
   const [isTaskActive, setIsTaskActive] = useState(false)
 
   return (
-    <div className="fixed bottom-0 right-0 p-5">
+    <div className="w-full h-screen flex flex-col items-end justify-end p-5">
+      {isInboxActive && <CardInbox />}
       <div className="flex gap-3 items-end p-5">
         <AnimatePresence>
           {isOpen && (
