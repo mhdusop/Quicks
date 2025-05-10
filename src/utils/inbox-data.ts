@@ -61,7 +61,7 @@ export const inboxData = [
             sender: "Obaidullah Amarkhil",
             timestamp: "2021-06-09T19:32:00",
             text: "Morning. I’ll try to do them. Thanks",
-            status: "read"
+            status: "unread"
          }
       ]
    },
@@ -75,7 +75,7 @@ export const inboxData = [
             sender: "FastVisa Support",
             timestamp: "2021-01-06T12:19:00",
             text: "Hey there! Welcome to your inbox.",
-            status: "unread"
+            status: "read"
          }
       ]
    }

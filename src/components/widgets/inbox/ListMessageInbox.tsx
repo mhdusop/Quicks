@@ -2,8 +2,27 @@ import { Dot } from "lucide-react";
 import { AvatarGroup, AvatarSingle } from "./AvatarMessageList";
 import { formatDate } from "@/utils/formatDate";
 import { inboxData } from "@/utils/inbox-data";
+import { useEffect, useState } from "react";
+import LoaderComponent from "@/components/shared/LoaderComponent";
 
 export default function ListMessageInbox() {
+   const [isLoading, setIsLoading] = useState(true)
+
+
+   useEffect(() => {
+      const timer = setTimeout(() => {
+         setIsLoading(false);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+   }, []);
+
+   if (isLoading) return (
+      <div className="h-[57vh] flex items-center justify-center">
+         <LoaderComponent />
+      </div>
+   )
+
    return (
       <div className="w-full max-w-3xl mx-auto space-y-4">
          {inboxData.map((group) => {
