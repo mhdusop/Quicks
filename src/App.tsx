@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import ButtonQuicks from "@/components/common/button/ButtonQuicks"
 import ButtonTaks from "@/components/common/button/ButtonTaks"
 import ButtonInbox from "@/components/common/button/ButtonInbox"
-import CardInbox from "./components/widgets/CardInbox"
+import CardInbox from "./components/widgets/inbox/CardInbox"
 
 function App() {
   const [isOpen, setIsOpen] = useState(false)

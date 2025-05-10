@@ -4,7 +4,7 @@ import {
    CardHeader,
 } from "@/components/ui/card"
 import SearchField from "@/components/common/input/SearchField"
-import LoaderComponent from "@/components/shared/LoaderComponent"
+import ListMessageInbox from "./ListMessageInbox"
 
 export default function CardInbox() {
    return (
@@ -13,7 +13,7 @@ export default function CardInbox() {
             <SearchField />
          </CardHeader>
          <CardContent>
-
+            <ListMessageInbox />
          </CardContent>
       </Card >
    )
