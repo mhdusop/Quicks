@@ -3,7 +3,7 @@ export const inboxData = [
       groupId: "109220",
       groupName: "Naturalization",
       isGroup: true,
-      members: ["Cameron Phillips", "User"],
+      members: ["Cameron Phillips", "You"],
       messages: [
          {
             sender: "Cameron Phillips",
@@ -12,7 +12,7 @@ export const inboxData = [
             status: "read"
          },
          {
-            sender: "User",
+            sender: "You",
             timestamp: "2021-06-09T19:32:00",
             text: "No worries. It will be completed ASAP. I’ve asked him yesterday.",
             status: "read"
@@ -23,7 +23,7 @@ export const inboxData = [
       groupId: "Hutto-I589",
       groupName: "Jeannette Moraima Guaman Chamba (Hutto I-589)",
       isGroup: true,
-      members: ["Ellen", "User"],
+      members: ["Ellen", "You"],
       messages: [
          {
             sender: "Ellen",
@@ -37,8 +37,14 @@ export const inboxData = [
       groupId: "8405",
       groupName: "Diana SALAZAR MUNGUIA",
       isGroup: true,
-      members: ["Cameron Phillips", "Elizabeth", "User"],
+      members: ["Cameron Phillips", "Elizabeth", "You"],
       messages: [
+         {
+            sender: "You",
+            timestamp: "2021-06-09T19:32:00",
+            text: "No worries. It will be completed ASAP. I’ve asked him yesterday.",
+            status: "read"
+         },
          {
             sender: "Mary Hilda",
             timestamp: "2021-06-09T19:32:00",
@@ -46,7 +52,7 @@ export const inboxData = [
             status: "read"
          },
          {
-            sender: "User",
+            sender: "You",
             timestamp: "2021-06-09T19:32:00",
             text: "Please contact Mary for questions regarding the case bcs she will be managing your forms from now on! Thanks Mary.",
             status: "read"
@@ -62,14 +68,14 @@ export const inboxData = [
             timestamp: "2021-06-09T19:32:00",
             text: "Morning. I’ll try to do them. Thanks",
             status: "unread"
-         }
+         },
       ]
    },
    {
       groupId: "support",
       groupName: "FastVisa Support",
       isGroup: false,
-      members: ["FastVisa Support", "User"],
+      members: ["FastVisa Support", "You"],
       messages: [
          {
             sender: "FastVisa Support",

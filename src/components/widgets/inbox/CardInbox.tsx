@@ -1,20 +1,39 @@
-import {
-   Card,
-   CardContent,
-   CardHeader,
-} from "@/components/ui/card"
-import SearchField from "@/components/common/input/SearchField"
-import ListMessageInbox from "./ListMessageInbox"
+import ChatView from "./ChatView";
+import ListMessageInbox from "./ListMessageInbox";
+import SearchField from "@/components/common/input/SearchField";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import type { Group } from "@/interface/group";
 
-export default function CardInbox() {
+export default function CardInbox({
+   selectedGroup,
+   setSelectedGroup,
+   setIsInboxActive,
+}: {
+   selectedGroup: Group | null;
+   setSelectedGroup: (group: Group | null) => void;
+   setIsInboxActive: (active: boolean) => void;
+}) {
    return (
-      <Card className="w-full h-full max-w-[734px] max-h-[737px] px-[32px] py-[24px]" >
-         <CardHeader>
-            <SearchField />
-         </CardHeader>
-         <CardContent>
-            <ListMessageInbox />
+      <Card className={`w-full h-full max-w-[734px] max-h-[737px] ${selectedGroup ? "p-0" : "px-[32px] py-[24px]"} overflow-hidden`}>
+         {!selectedGroup && (
+            <CardHeader>
+               <SearchField />
+            </CardHeader>
+         )}
+         <CardContent className={`h-full overflow-y-auto ${selectedGroup ? "p-0" : ""}`}>
+            {selectedGroup ? (
+               <ChatView
+                  group={selectedGroup}
+                  onBack={() => setSelectedGroup(null)}
+                  onClose={() => {
+                     setSelectedGroup(null)
+                     setIsInboxActive(false)
+                  }}
+               />
+            ) : (
+               <ListMessageInbox onSelectGroup={(group) => setSelectedGroup(group)} />
+            )}
          </CardContent>
-      </Card >
-   )
+      </Card>
+   );
 }
