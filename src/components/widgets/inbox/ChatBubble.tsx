@@ -11,11 +11,13 @@ type Message = {
 export default function ChatBubble({
    msg,
    formatTime,
-   onDelete
+   onDelete,
+   onEdit
 }: {
    msg: Message;
    formatTime: (t: any) => string;
    onDelete?: (msg: Message) => void;
+   onEdit?: (msg: Message) => void;
 }) {
    const [showMenu, setShowMenu] = useState(false);
    const menuRef = useRef<HTMLDivElement>(null);
@@ -65,7 +67,13 @@ export default function ChatBubble({
                         ref={menuRef}
                         className="absolute right-0 mt-1 w-28 bg-white border border-gray-200 shadow-md rounded-md z-10"
                      >
-                        <div className="px-3 py-2 hover:bg-gray-100 text-primary-blue cursor-pointer text-sm border-b">
+                        <div
+                           className="px-3 py-2 hover:bg-gray-100 text-primary-blue cursor-pointer text-sm border-b"
+                           onClick={() => {
+                              if (onEdit) onEdit(msg);
+                              setShowMenu(false);
+                           }}
+                        >
                            Edit
                         </div>
                         <div

@@ -15,6 +15,7 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
    const [messages, setMessages] = useState(group.messages);
    const [hasUnread, setHasUnread] = useState(false);
    const [showUnread, setShowUnread] = useState(false);
+   const [editingMsg, setEditingMsg] = useState<any | null>(null);
    const bottomRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
@@ -37,6 +38,40 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
       });
    };
 
+   const handleSend = (text: string) => {
+      if (!text.trim()) return;
+
+      const readBeforeSend = messages.map(msg =>
+         msg.status === "unread" ? { ...msg, status: "read" } : msg
+      );
+
+      let updatedMessages;
+
+      if (editingMsg) {
+         updatedMessages = readBeforeSend.map(msg =>
+            msg.timestamp === editingMsg.timestamp && msg.sender === editingMsg.sender
+               ? { ...msg, text }
+               : msg
+         );
+         setEditingMsg(null);
+      } else {
+         const newMsg = {
+            sender: "You",
+            text,
+            timestamp: Date.now(),
+            status: "read",
+         };
+         updatedMessages = [...readBeforeSend, newMsg];
+      }
+
+      setMessages(updatedMessages);
+      localStorage.setItem("message", JSON.stringify(updatedMessages));
+      setHasUnread(false);
+      setShowUnread(false);
+      scrollToBottom();
+   };
+
+
    const handleDelete = (targetMsg: any) => {
       const stored = localStorage.getItem("message");
       if (!stored) return;
@@ -52,10 +87,14 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
                )
          );
          localStorage.setItem("message", JSON.stringify(updated));
-         setMessages(updated); // Update state agar UI langsung berubah
+         setMessages(updated);
       } catch (e) {
          console.error("Gagal menghapus pesan:", e);
       }
+   };
+
+   const handleEdit = (msg: any) => {
+      setEditingMsg(msg);
    };
 
    const readMessages = messages.filter(msg => msg.status !== "unread");
@@ -78,9 +117,15 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
             </Button>
          </div>
 
-         <div className="h-[80vh] max-h-[737px] w-full overflow-y-auto py-16 relative px-4">
+         <div className="h-[80vh] max-h-[737px] w-full overflow-y-auto py-20 relative px-4">
             {readMessages.map((msg, idx) => (
-               <ChatBubble key={`read-${idx}`} msg={msg} formatTime={formatTime} onDelete={handleDelete} />
+               <ChatBubble
+                  key={`read-${idx}`}
+                  msg={msg}
+                  formatTime={formatTime}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+               />
             ))}
 
             {showUnread &&
@@ -107,8 +152,8 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
             )}
          </div>
 
-         <div className="w-full max-w-[734px] bottom-[8.5rem] px-4 fixed">
-            <ChatInput />
+         <div className="w-full max-w-[734px] bottom-[7.5rem] px-4 rounded-b-lg fixed">
+            <ChatInput onSend={handleSend} editMsg={editingMsg} />
          </div>
       </div>
    );
