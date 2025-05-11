@@ -75,7 +75,7 @@ export const inboxData = [
       groupId: "support",
       groupName: "FastVisa Support",
       isGroup: false,
-      members: ["FastVisa Support", "You"],
+      members: ["FastVisa Support"],
       messages: [
          {
             sender: "FastVisa Support",

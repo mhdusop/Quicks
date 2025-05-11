@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Group } from "@/interface/group";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, LoaderCircle, X } from "lucide-react";
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInput";
 
@@ -16,6 +16,7 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
    const [hasUnread, setHasUnread] = useState(false);
    const [showUnread, setShowUnread] = useState(false);
    const [editingMsg, setEditingMsg] = useState<any | null>(null);
+   const [isLoadingSupport, setIsLoadingSupport] = useState(false);
    const bottomRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
@@ -41,9 +42,12 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
    const handleSend = (text: string) => {
       if (!text.trim()) return;
 
-      const readBeforeSend = messages.map(msg =>
-         msg.status === "unread" ? { ...msg, status: "read" } : msg
-      );
+      const readBeforeSend = messages.map(msg => {
+         if (msg.sender === "FastVisa Support") {
+            setIsLoadingSupport(true);
+         }
+         return msg.status === "unread" ? { ...msg, status: "read" } : msg;
+      });
 
       let updatedMessages;
 
@@ -58,7 +62,7 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
          const newMsg = {
             sender: "You",
             text,
-            timestamp: Date.now(),
+            timestamp: new Date().toISOString(),
             status: "read",
          };
          updatedMessages = [...readBeforeSend, newMsg];
@@ -109,7 +113,9 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
                </Button>
                <div className="flex flex-col">
                   <h2 className="font-bold text-md text-primary-blue">{group.groupName}</h2>
-                  <small className="text-primary-gray">{group.members.length} Participant</small>
+                  {group.members.length > 1 ? (
+                     <small className="text-primary-gray">{group.members.length} Participant</small>
+                  ) : ""}
                </div>
             </div>
             <Button className="bg-transparent shadow-none hover:bg-transparent" onClick={onClose}>
@@ -117,7 +123,7 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
             </Button>
          </div>
 
-         <div className="h-[80vh] max-h-[737px] w-full overflow-y-auto py-20 relative px-4">
+         <div className="h-[80vh] max-h-[737px] w-full overflow-y-auto py-20 relative px-6">
             {readMessages.map((msg, idx) => (
                <ChatBubble
                   key={`read-${idx}`}
@@ -152,7 +158,15 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
             )}
          </div>
 
-         <div className="w-full max-w-[734px] bottom-[7.5rem] px-4 rounded-b-lg fixed">
+         {isLoadingSupport && (
+            <div className="px-6 w-full max-w-[734px] bottom-[12rem] fixed">
+               <div className="flex items-center gap-2 bg-stickers-skySoft rounded p-3.5">
+                  <LoaderCircle className="text-primary-blue animate-spin" />
+                  <span className="text-primary-gray">Please wait while we connect you with one of our team ...</span>
+               </div>
+            </div>
+         )}
+         <div className="w-full max-w-[734px] bottom-[7.5rem] px-6 rounded-b-lg fixed">
             <ChatInput onSend={handleSend} editMsg={editingMsg} />
          </div>
       </div>
