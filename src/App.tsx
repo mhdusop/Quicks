@@ -4,15 +4,23 @@ import ButtonQuicks from "@/components/common/button/ButtonQuicks"
 import ButtonTaks from "@/components/common/button/ButtonTaks"
 import ButtonInbox from "@/components/common/button/ButtonInbox"
 import CardInbox from "./components/widgets/inbox/CardInbox"
+import type { Group } from "./interface/group"
 
 function App() {
   const [isOpen, setIsOpen] = useState(false)
   const [isInboxActive, setIsInboxActive] = useState(false)
   const [isTaskActive, setIsTaskActive] = useState(false)
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
 
   return (
     <div className="w-full h-screen flex flex-col items-end justify-end p-5">
-      {isInboxActive && <CardInbox />}
+      {isInboxActive && (
+        <CardInbox
+          selectedGroup={selectedGroup}
+          setSelectedGroup={setSelectedGroup}
+          setIsInboxActive={setIsInboxActive}
+        />
+      )}
       <div className="flex gap-3 items-end p-5">
         <AnimatePresence>
           {isOpen && (
