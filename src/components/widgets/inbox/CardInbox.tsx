@@ -3,6 +3,7 @@ import ListMessageInbox from "./ListMessageInbox";
 import SearchField from "@/components/common/input/SearchField";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Group } from "@/interface/group";
+import { useEffect } from "react";
 
 export default function CardInbox({
    selectedGroup,
@@ -13,6 +14,15 @@ export default function CardInbox({
    setSelectedGroup: (group: Group | null) => void;
    setIsInboxActive: (active: boolean) => void;
 }) {
+
+   useEffect(() => {
+      if (selectedGroup) {
+         localStorage.setItem("message", JSON.stringify(selectedGroup.messages));
+      } else {
+         localStorage.removeItem("message");
+      }
+   }, [selectedGroup])
+
    return (
       <Card className={`w-full h-full max-w-[734px] max-h-[737px] ${selectedGroup ? "p-0" : "px-[32px] py-[24px]"} overflow-hidden`}>
          {!selectedGroup && (

@@ -4,7 +4,6 @@ import type { Group } from "@/interface/group";
 import { ArrowLeft, X } from "lucide-react";
 import ChatBubble from "./ChatBubble";
 import ChatInput from "./ChatInput";
-import { formatDate } from "date-fns";
 
 interface ChatViewProps {
    group: Group;
@@ -13,14 +12,15 @@ interface ChatViewProps {
 }
 
 export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
+   const [messages, setMessages] = useState(group.messages);
    const [hasUnread, setHasUnread] = useState(false);
    const [showUnread, setShowUnread] = useState(false);
    const bottomRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
-      const unreadExists = group.messages.some(msg => msg.status === 'unread');
+      const unreadExists = messages.some(msg => msg.status === "unread");
       setHasUnread(unreadExists);
-   }, [group.messages]);
+   }, [messages]);
 
    const scrollToBottom = () => {
       setShowUnread(true);
@@ -37,8 +37,29 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
       });
    };
 
-   const readMessages = group.messages.filter(msg => msg.status !== 'unread');
-   const unreadMessages = group.messages.filter(msg => msg.status === 'unread');
+   const handleDelete = (targetMsg: any) => {
+      const stored = localStorage.getItem("message");
+      if (!stored) return;
+
+      try {
+         const parsed = JSON.parse(stored);
+         const updated = parsed.filter(
+            (m: any) =>
+               !(
+                  m.sender === targetMsg.sender &&
+                  m.timestamp === targetMsg.timestamp &&
+                  m.text === targetMsg.text
+               )
+         );
+         localStorage.setItem("message", JSON.stringify(updated));
+         setMessages(updated); // Update state agar UI langsung berubah
+      } catch (e) {
+         console.error("Gagal menghapus pesan:", e);
+      }
+   };
+
+   const readMessages = messages.filter(msg => msg.status !== "unread");
+   const unreadMessages = messages.filter(msg => msg.status === "unread");
 
    return (
       <div className="relative h-full max-h-[737px]">
@@ -59,22 +80,21 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
 
          <div className="h-[80vh] max-h-[737px] w-full overflow-y-auto py-16 relative px-4">
             {readMessages.map((msg, idx) => (
-               <ChatBubble key={`read-${idx}`} msg={msg} formatTime={formatTime} />
+               <ChatBubble key={`read-${idx}`} msg={msg} formatTime={formatTime} onDelete={handleDelete} />
             ))}
 
             {showUnread &&
                unreadMessages.map((msg, idx) => (
-                  <>
+                  <div key={`unread-${idx}`}>
                      <div className="inline-flex items-center justify-center w-full">
                         <hr className="w-full h-0.5 my-8 bg-indicator-red border-0 rounded-sm" />
                         <div className="absolute px-4 text-indicator-red -translate-x-1/2 bg-[#ffffff] left-1/2">
                            New Message
                         </div>
                      </div>
-                     <ChatBubble key={`unread-${idx}`} msg={msg} formatTime={formatTime} />
-                  </>
-               ))
-            }
+                     <ChatBubble msg={msg} formatTime={formatTime} onDelete={handleDelete} />
+                  </div>
+               ))}
 
             <div ref={bottomRef} />
 
@@ -86,6 +106,7 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
                </div>
             )}
          </div>
+
          <div className="w-full max-w-[734px] bottom-[8.5rem] px-4 fixed">
             <ChatInput />
          </div>
