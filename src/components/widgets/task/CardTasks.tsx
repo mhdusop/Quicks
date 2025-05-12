@@ -22,6 +22,19 @@ export default function CardTasks() {
       }
    }, []);
 
+   const handleAddTask = () => {
+      const newTask: Tasks = {
+         id: tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1,
+         title: "Type Task Title",
+         completed: false,
+         dueDate: new Date,
+         description: "",
+      };
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+   };
+
    const handleDeleteTask = (taskId: number) => {
       const updatedTasks = tasks.filter(task => task.id !== taskId);
       setTasks(updatedTasks);
@@ -43,7 +56,12 @@ export default function CardTasks() {
                   <DropdownMenuItem>Urgent To-Do</DropdownMenuItem>
                </DropdownMenuContent>
             </DropdownMenu>
-            <Button className="text-sm h-8 px-4 bg-primary-blue text-primary-white hover:bg-primary-blue/80">New Task</Button>
+            <Button
+               className="text-sm h-8 px-4 bg-primary-blue text-primary-white hover:bg-primary-blue/80"
+               onClick={handleAddTask}
+            >
+               New Task
+            </Button>
          </CardHeader>
 
          <CardContent className="flex-1 overflow-y-auto px-8 pb-6 pt-0">
