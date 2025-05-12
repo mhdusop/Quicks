@@ -3,4 +3,5 @@ export interface Message {
    text: string;
    timestamp: string;
    status: string;
+   replyTo?: any;
 }

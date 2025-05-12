@@ -29,6 +29,7 @@ export default function ChatInput({ onSend, editMsg }: ChatInputProps) {
             onKeyDown={e => {
                if (e.key === "Enter") handleSend();
             }}
+            className="border border-primary-grayLight"
          />
          <Button className="bg-primary-blue hover:bg-primary-blue/80" onClick={handleSend}>
             Send
