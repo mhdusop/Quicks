@@ -17,6 +17,7 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
    const [showUnread, setShowUnread] = useState(false);
    const [editingMsg, setEditingMsg] = useState<any | null>(null);
    const [isLoadingSupport, setIsLoadingSupport] = useState(false);
+   const [replyingMsg, setReplyingMsg] = useState<any | null>(null);
    const bottomRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
@@ -64,10 +65,16 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
             text,
             timestamp: new Date().toISOString(),
             status: "read",
+            replyTo: replyingMsg ? {
+               sender: replyingMsg.sender,
+               text: replyingMsg.text,
+               timestamp: replyingMsg.timestamp,
+            } : null,
          };
          updatedMessages = [...readBeforeSend, newMsg];
       }
 
+      setReplyingMsg(null);
       setMessages(updatedMessages);
       localStorage.setItem("message", JSON.stringify(updatedMessages));
       setHasUnread(false);
@@ -101,12 +108,16 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
       setEditingMsg(msg);
    };
 
+   const handleReply = (msg: any) => {
+      setReplyingMsg(msg);
+   };
+
    const readMessages = messages.filter(msg => msg.status !== "unread");
    const unreadMessages = messages.filter(msg => msg.status === "unread");
 
    return (
-      <div className="relative h-full max-h-[737px]">
-         <div className="w-full max-w-[734px] bg-[#ffffff] flex justify-between items-center py-3 border-b border-primary-lightGray rounded-t-lg fixed z-20">
+      <div className="relative w-full h-full max-w-[734px]">
+         <div className="w-full bg-[#ffffff] flex justify-between items-center py-3 border-b border-primary-lightGray rounded-t-lg absolute top-0 left-0 z-20">
             <div className="flex items-center gap-3">
                <Button className="bg-transparent shadow-none hover:bg-transparent" onClick={onBack}>
                   <ArrowLeft color="#333333" size={16} />
@@ -124,15 +135,29 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
          </div>
 
          <div className="h-[80vh] max-h-[737px] w-full overflow-y-auto py-20 relative px-6">
-            {readMessages.map((msg, idx) => (
-               <ChatBubble
-                  key={`read-${idx}`}
-                  msg={msg}
-                  formatTime={formatTime}
-                  onDelete={handleDelete}
-                  onEdit={handleEdit}
-               />
-            ))}
+            {readMessages.map((msg, idx) => {
+               const isReply = !!msg.replyTo;
+
+               return (
+                  <div key={`read-${idx}`}>
+                     {isReply && (
+                        <div className="w-full flex justify-end">
+                           <div className="flex flex-col border bg-primary-white border-primary-light p-2 rounded-lg">
+                              <div className="text-xs text-primary-gray mb-0.5">Reply to {msg.replyTo.sender}</div>
+                              <div className="text-sm text-primary-black truncate">{msg.replyTo.text}</div>
+                           </div>
+                        </div>
+                     )}
+                     <ChatBubble
+                        msg={msg}
+                        formatTime={formatTime}
+                        onDelete={handleDelete}
+                        onEdit={handleEdit}
+                        onReply={handleReply}
+                     />
+                  </div>
+               );
+            })}
 
             {showUnread &&
                unreadMessages.map((msg, idx) => (
@@ -143,14 +168,19 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
                            New Message
                         </div>
                      </div>
-                     <ChatBubble msg={msg} formatTime={formatTime} onDelete={handleDelete} />
+                     <ChatBubble
+                        msg={msg}
+                        formatTime={formatTime}
+                        onDelete={handleDelete}
+                        onReply={handleReply}
+                     />
                   </div>
                ))}
 
             <div ref={bottomRef} />
 
             {hasUnread && !showUnread && (
-               <div className="absolute bottom-40 w-full flex justify-center z-10">
+               <div className="absolute bottom-[5rem] w-full flex justify-center z-10">
                   <Button onClick={scrollToBottom} className="bg-[#E9F3FF] cursor-pointer hover:bg-[#E9F3FF]/80 text-primary-blue rounded px-3">
                      New Message
                   </Button>
@@ -166,7 +196,23 @@ export default function ChatView({ group, onBack, onClose }: ChatViewProps) {
                </div>
             </div>
          )}
-         <div className="w-full max-w-[734px] bottom-[7.5rem] px-6 rounded-b-lg fixed">
+
+         {replyingMsg && (
+            <div className="w-full max-w-[40.9rem] bottom-[3.3rem] px-6 absolute z-20">
+               <div className="bg-primary-white border border-primary-grayLight rounded-t-lg px-4 py-2 relative">
+                  <div className="text-xs text-primary-gray mb-1">Replying to {replyingMsg.sender}</div>
+                  <div className="text-sm text-primary-black truncate">{replyingMsg.text}</div>
+                  <button
+                     className="absolute top-2 right-2 text-primary-gray hover:text-primary-black"
+                     onClick={() => setReplyingMsg(null)}
+                  >
+                     <X size={14} />
+                  </button>
+               </div>
+            </div>
+         )}
+
+         <div className="w-full bottom-0 px-6 rounded-b-lg absolute">
             <ChatInput onSend={handleSend} editMsg={editingMsg} />
          </div>
       </div>
