@@ -9,7 +9,12 @@ import type { Tasks } from "@/interface/tasks";
 import { Calendar as CalendarIcon, ChevronDown, Clock, Ellipsis, Pencil } from "lucide-react";
 import LoaderComponent from "@/components/shared/LoaderComponent";
 
-export default function AccordionTasks({ task }: { task: Tasks }) {
+interface AccordionTasksProps {
+   task: Tasks
+   onDelete: (id: number) => void
+}
+
+export default function AccordionTasks({ task, onDelete }: AccordionTasksProps) {
    const [checked, setChecked] = useState(task.completed);
    const [selectedDate, setSelectedDate] = useState<Date | undefined>(task.dueDate);
 
@@ -54,7 +59,20 @@ export default function AccordionTasks({ task }: { task: Tasks }) {
                         </div>
                      </div>
                   </AccordionTrigger>
-                  <Ellipsis className="h-4 w-4 text-muted-foreground absolute -right-0 top-[2px]" />
+
+                  <Popover>
+                     <PopoverTrigger asChild>
+                        <Ellipsis className="h-4 w-4 text-muted-foreground absolute -right-0 top-[2px] cursor-pointer" />
+                     </PopoverTrigger>
+                     <PopoverContent className="w-24 p-2 border border-primary-gray shadow-none me-10">
+                        <button
+                           onClick={() => onDelete(task.id)}
+                           className="text-indicator-red text-sm ms-2"
+                        >
+                           Delete
+                        </button>
+                     </PopoverContent>
+                  </Popover>
                </div>
 
                <AccordionContent className="mt-2 ps-7">
