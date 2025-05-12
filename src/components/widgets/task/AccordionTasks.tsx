@@ -10,6 +10,9 @@ import { Calendar as CalendarIcon, ChevronDown, Clock, Ellipsis, Pencil } from "
 import LoaderComponent from "@/components/shared/LoaderComponent";
 import { Textarea } from "@/components/ui/textarea";
 import { differenceInCalendarDays } from "date-fns";
+import { STICKER_OPTIONS } from "@/utils/stikers-data";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import BookmarksBlue from "@/components/icons/BookmarksBlue";
 
 interface AccordionTasksProps {
    task: Tasks;
@@ -24,6 +27,7 @@ export default function AccordionTasks({ task, onDelete }: AccordionTasksProps) 
    const [isLoading, setIsLoading] = useState(true);
    const [title, setTitle] = useState(task.title || "");
    const [isEditingTitle, setIsEditingTitle] = useState(false);
+   const [stickers, setStickers] = useState<string[]>(task.stikers || []);
 
    const today = new Date();
    const daysLeft = selectedDate ? differenceInCalendarDays(selectedDate, today) : null;
@@ -38,11 +42,11 @@ export default function AccordionTasks({ task, onDelete }: AccordionTasksProps) 
       if (tasksInStorage) {
          const parsed = JSON.parse(tasksInStorage);
          const updated = parsed.map((t: Tasks) =>
-            t.id === task.id ? { ...t, title, dueDate: selectedDate, description } : t
+            t.id === task.id ? { ...t, title, dueDate: selectedDate, description, stikers: stickers } : t
          );
          localStorage.setItem("tasks", JSON.stringify(updated));
       }
-   }, [selectedDate, description]);
+   }, [selectedDate, description, title, stickers]);
 
    if (isLoading) {
       return (
@@ -157,6 +161,44 @@ export default function AccordionTasks({ task, onDelete }: AccordionTasksProps) 
                         )}
                      </div>
                   </div>
+                  <DropdownMenu>
+                     <DropdownMenuTrigger asChild>
+                        <div className="flex items-center gap-3 mt-4 cursor-pointer">
+                           <BookmarksBlue />
+                           <div className="flex flex-wrap gap-2">
+                              {STICKER_OPTIONS.filter((opt) => stickers.includes(opt.value)).map((sticker) => (
+                                 <span
+                                    key={sticker.value}
+                                    className={`text-xs px-2 py-1 rounded ${sticker.color}`}
+                                 >
+                                    {sticker.label}
+                                 </span>
+                              ))}
+                              {stickers.length === 0 && (
+                                 <span className="text-xs text-gray-400 italic">Add Stickers</span>
+                              )}
+                           </div>
+                        </div>
+                     </DropdownMenuTrigger>
+                     <DropdownMenuContent className="w-[277px] max-h-[323px] overflow-y-auto p-3 space-y-2">
+                        {STICKER_OPTIONS.map((option) => (
+                           <DropdownMenuItem
+                              key={option.value}
+                              onSelect={(e) => {
+                                 e.preventDefault();
+                                 setStickers((prev) =>
+                                    prev.includes(option.value)
+                                       ? prev.filter((s) => s !== option.value)
+                                       : [...prev, option.value]
+                                 );
+                              }}
+                              className={`cursor-pointer flex items-center gap-2 ${option.color}`}
+                           >
+                              <span className="text-sm">{option.label}</span>
+                           </DropdownMenuItem>
+                        ))}
+                     </DropdownMenuContent>
+                  </DropdownMenu>
                </AccordionContent>
             </div>
          </div>

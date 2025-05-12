@@ -7,6 +7,7 @@ export const tasksData = [
             "Closing off this case since this application has been cancelled. No one really understand how this case could possibly be cancelled...",
         daysLeft: 2,
         completed: false,
+        stikers: ["court", "important"],
     },
     {
         id: 2,
@@ -16,6 +17,7 @@ export const tasksData = [
             "All Cases must include all payment transactions, all documents and forms filled...",
         daysLeft: 4,
         completed: false,
+        stikers: ["client", "asap"],
     },
     {
         id: 3,
@@ -24,6 +26,7 @@ export const tasksData = [
         description: "",
         daysLeft: 10,
         completed: false,
+        stikers: ["appointments", "self"],
     },
     {
         id: 4,
@@ -31,6 +34,7 @@ export const tasksData = [
         dueDate: new Date("2021-06-03"),
         daysLeft: 4,
         completed: true,
+        stikers: ["virtual"],
     },
     {
         id: 5,
@@ -38,5 +42,6 @@ export const tasksData = [
         dueDate: new Date("2021-06-02"),
         daysLeft: 4,
         completed: true,
+        stikers: ["client", "offline"],
     },
 ];
