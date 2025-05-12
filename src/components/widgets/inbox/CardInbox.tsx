@@ -24,7 +24,7 @@ export default function CardInbox({
    }, [selectedGroup])
 
    return (
-      <Card className={`w-full h-full max-w-[734px] max-h-[737px] ${selectedGroup ? "p-0" : "px-[32px] py-[24px]"} overflow-hidden`}>
+      <Card className={`w-full h-full max-w-[734px] max-h-[737px] ${selectedGroup ? "p-0" : "p-3"} overflow-hidden`}>
          {!selectedGroup && (
             <CardHeader>
                <SearchField />

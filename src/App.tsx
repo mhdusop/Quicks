@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import ButtonQuicks from "@/components/common/button/ButtonQuicks"
-import ButtonTaks from "@/components/common/button/ButtonTaks"
+import ButtonTasks from "./components/common/button/ButtonTasks"
 import ButtonInbox from "@/components/common/button/ButtonInbox"
 import CardInbox from "./components/widgets/inbox/CardInbox"
 import type { Group } from "./interface/group"
+import CardTasks from "./components/widgets/task/CardTasks"
 
 function App() {
   const [isOpen, setIsOpen] = useState(false)
@@ -21,10 +22,13 @@ function App() {
           setIsInboxActive={setIsInboxActive}
         />
       )}
+      {isTaskActive && (
+        <CardTasks />
+      )}
       <div className="flex gap-3 items-end p-5">
         <AnimatePresence>
           {isOpen && (
-            <>
+            <div className={`flex flex-row items-center gap-3 ${isTaskActive ? "flex-row-reverse gap-0" : ""}`}>
               <motion.div
                 key="task"
                 initial={{ opacity: 0, x: 20 }}
@@ -32,7 +36,7 @@ function App() {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.1 }}
               >
-                <ButtonTaks
+                <ButtonTasks
                   isHide={isInboxActive || isTaskActive}
                   isActive={isTaskActive}
                   onClick={() => {
@@ -61,14 +65,14 @@ function App() {
                   }}
                 />
               </motion.div>
-            </>
+            </div>
           )}
         </AnimatePresence>
         {!isInboxActive && !isTaskActive && (
           <ButtonQuicks onClick={() => setIsOpen(!isOpen)} />
         )}
       </div>
-    </div>
+    </div >
   )
 }
 

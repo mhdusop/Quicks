@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button"
 import ChromeReaderYellowIcon from "@/components/icons/ChromeReaderYellowIcon"
 import ChromeReaderWhiteIcon from "@/components/icons/ChromeReaderWhiteIcon"
 
-type ButtonTaskProps = {
+type ButtonTasksProps = {
    isActive?: boolean
    onClick: () => void
    isHide?: boolean
 }
 
-export default function ButtonTaks({ isActive, onClick, isHide }: ButtonTaskProps) {
+export default function ButtonTasks({ isActive, onClick, isHide }: ButtonTasksProps) {
    return (
       <div className="flex flex-col items-center">
          {!isHide && <p className="font-lato text-primary-white mb-1">Task</p>}
