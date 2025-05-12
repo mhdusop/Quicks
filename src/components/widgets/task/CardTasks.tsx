@@ -19,15 +19,14 @@ export default function CardTasks() {
                   </Button>
                </DropdownMenuTrigger>
                <DropdownMenuContent>
-                  <DropdownMenuItem>All Tasks</DropdownMenuItem>
-                  <DropdownMenuItem>Completed</DropdownMenuItem>
-                  <DropdownMenuItem>Pending</DropdownMenuItem>
+                  <DropdownMenuItem>Personal Errands</DropdownMenuItem>
+                  <DropdownMenuItem>Urgent To-Do</DropdownMenuItem>
                </DropdownMenuContent>
             </DropdownMenu>
             <Button className="text-sm h-8 px-4 bg-primary-blue text-primary-white hover:bg-primary-blue/80">New Task</Button>
          </CardHeader>
 
-         <CardContent className="flex-1 overflow-y-auto px-8 py-6">
+         <CardContent className="flex-1 overflow-y-auto px-8 pb-6 pt-0">
             <Accordion type="multiple" className="w-full space-y-4">
                {tasksData.map((task) => (
                   <AccordionTasks key={task.id} task={task} />
