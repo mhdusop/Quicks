@@ -35,7 +35,8 @@ export default {
   			mint: '#AFEBDB',
   			greenPastel: '#CBF1C2',
   			lavender: '#CFCEF9',
-  			pinkCandy: '#F9E0FD'
+  			pinkCandy: '#F9E0FD',
+			blueSea: '#9DD0ED'
   		}
   	},
   	fontFamily: {

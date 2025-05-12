@@ -5,4 +5,5 @@ export interface Tasks {
    description?: string 
    daysLeft?: number
    completed: boolean,
+   stikers?: string[]
 }
