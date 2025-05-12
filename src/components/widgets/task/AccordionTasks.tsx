@@ -8,23 +8,49 @@ import { format } from "date-fns";
 import type { Tasks } from "@/interface/tasks";
 import { Calendar as CalendarIcon, ChevronDown, Clock, Ellipsis, Pencil } from "lucide-react";
 import LoaderComponent from "@/components/shared/LoaderComponent";
+import { Textarea } from "@/components/ui/textarea";
+import { differenceInCalendarDays } from "date-fns";
 
-export default function AccordionTasks({ task }: { task: Tasks }) {
+interface AccordionTasksProps {
+   task: Tasks;
+   onDelete: (id: number) => void;
+}
+
+export default function AccordionTasks({ task, onDelete }: AccordionTasksProps) {
    const [checked, setChecked] = useState(task.completed);
    const [selectedDate, setSelectedDate] = useState<Date | undefined>(task.dueDate);
-
+   const [description, setDescription] = useState(task.description || "");
+   const [isEditingDesc, setIsEditingDesc] = useState(false);
    const [isLoading, setIsLoading] = useState(true);
+   const [title, setTitle] = useState(task.title || "");
+   const [isEditingTitle, setIsEditingTitle] = useState(false);
+
+   const today = new Date();
+   const daysLeft = selectedDate ? differenceInCalendarDays(selectedDate, today) : null;
 
    useEffect(() => {
       const timer = setTimeout(() => setIsLoading(false), 1000);
       return () => clearTimeout(timer);
    }, []);
 
-   if (isLoading) return (
-      <div className="h-[57vh] flex items-center justify-center">
-         <LoaderComponent />
-      </div>
-   );
+   useEffect(() => {
+      const tasksInStorage = localStorage.getItem("tasks");
+      if (tasksInStorage) {
+         const parsed = JSON.parse(tasksInStorage);
+         const updated = parsed.map((t: Tasks) =>
+            t.id === task.id ? { ...t, title, dueDate: selectedDate, description } : t
+         );
+         localStorage.setItem("tasks", JSON.stringify(updated));
+      }
+   }, [selectedDate, description]);
+
+   if (isLoading) {
+      return (
+         <div className="h-[57vh] flex items-center justify-center">
+            <LoaderComponent />
+         </div>
+      );
+   }
 
    return (
       <AccordionItem value={`task-${task.id}`} className="border-b px-1 !mt-0">
@@ -38,13 +64,29 @@ export default function AccordionTasks({ task }: { task: Tasks }) {
                   />
                   <AccordionTrigger className="py-0">
                      <div className="w-full flex justify-between items-center max-w-[96%]">
-                        <span className={`text-sm ${checked ? "line-through text-primary-grayLight" : "text-gray-800"}`}>
-                           {task.title}
-                        </span>
+                        <div className="w-full">
+                           {isEditingTitle ? (
+                              <input
+                                 value={title}
+                                 onChange={(e) => setTitle(e.target.value)}
+                                 onBlur={() => setIsEditingTitle(false)}
+                                 autoFocus
+                                 className={`text-sm bg-transparent outline-none border border-primary-gray rounded px-2 py-1 w-full ${checked ? "line-through text-primary-grayLight" : "text-gray-800"
+                                    }`}
+                              />
+                           ) : (
+                              <span
+                                 className={`text-sm cursor-text ${checked ? "line-through text-primary-grayLight" : "text-gray-800"}`}
+                                 onClick={() => setIsEditingTitle(true)}
+                              >
+                                 {title || "Type Task Title"}
+                              </span>
+                           )}
+                        </div>
                         <div className="flex items-center gap-3 whitespace-nowrap">
-                           {!checked && task.daysLeft && (
+                           {!checked && daysLeft !== null && daysLeft > 0 && daysLeft < 11 && (
                               <span className="text-xs text-indicator-red font-medium">
-                                 {task.daysLeft} Days Left
+                                 {daysLeft} Days Left
                               </span>
                            )}
                            <span className="text-xs text-primary-grayLight">
@@ -54,12 +96,25 @@ export default function AccordionTasks({ task }: { task: Tasks }) {
                         </div>
                      </div>
                   </AccordionTrigger>
-                  <Ellipsis className="h-4 w-4 text-muted-foreground absolute -right-0 top-[2px]" />
+
+                  <Popover>
+                     <PopoverTrigger asChild>
+                        <Ellipsis className="h-4 w-4 text-muted-foreground absolute -right-0 top-[2px] cursor-pointer" />
+                     </PopoverTrigger>
+                     <PopoverContent className="w-24 p-2 border border-primary-gray shadow-none me-10">
+                        <button
+                           onClick={() => onDelete(task.id)}
+                           className="text-indicator-red text-sm ms-2"
+                        >
+                           Delete
+                        </button>
+                     </PopoverContent>
+                  </Popover>
                </div>
 
                <AccordionContent className="mt-2 ps-7">
                   <div className="flex items-center gap-3 text-xs mb-2">
-                     <Clock className="h-4 w-4 max-w-4 max-h-4 min-w-4 min-h-4 text-primary-blue" />
+                     <Clock className="h-4 w-4 text-primary-blue" />
                      <Popover>
                         <PopoverTrigger asChild>
                            <Button
@@ -80,13 +135,27 @@ export default function AccordionTasks({ task }: { task: Tasks }) {
                         </PopoverContent>
                      </Popover>
                   </div>
-                  <div className="flex items-center gap-3">
-                     <Pencil className="h-4 w-4 max-w-4 max-h-4 min-w-4 min-h-4 text-primary-blue" />
-                     {task.description ? (
-                        <p className="text-primary-gray">{task.description}</p>
-                     ) : (
-                        <p className="italic text-primary-gray">No Description</p>
-                     )}
+
+                  <div className="flex items-start gap-3">
+                     <Pencil className="h-4 w-4 text-primary-blue mt-1" />
+                     <div className="flex-1">
+                        {isEditingDesc ? (
+                           <Textarea
+                              className="w-full border border-primary-gray rounded px-2 py-1 text-sm"
+                              value={description}
+                              autoFocus
+                              onBlur={() => setIsEditingDesc(false)}
+                              onChange={(e) => setDescription(e.target.value)}
+                           />
+                        ) : (
+                           <p
+                              className={`text-primary-gray text-sm ${description ? "" : "italic"}`}
+                              onClick={() => setIsEditingDesc(true)}
+                           >
+                              {description || "No Description"}
+                           </p>
+                        )}
+                     </div>
                   </div>
                </AccordionContent>
             </div>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import ButtonQuicks from "@/components/common/button/ButtonQuicks"
 import ButtonTasks from "./components/common/button/ButtonTasks"
@@ -13,6 +13,13 @@ function App() {
   const [isTaskActive, setIsTaskActive] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
 
+  useEffect(() => {
+    if (!isTaskActive || !isInboxActive) {
+      localStorage.removeItem("tasks")
+      localStorage.removeItem("message")
+    }
+  }, [isTaskActive])
+
   return (
     <div className="w-full h-screen flex flex-col items-end justify-end p-5">
       {isInboxActive && (
@@ -22,9 +29,7 @@ function App() {
           setIsInboxActive={setIsInboxActive}
         />
       )}
-      {isTaskActive && (
-        <CardTasks />
-      )}
+      {isTaskActive && <CardTasks />}
       <div className="flex gap-3 items-end p-5">
         <AnimatePresence>
           {isOpen && (
